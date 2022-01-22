@@ -1,0 +1,25 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2636
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica-Bold;\f1\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red24\green24\blue23;\red249\green247\blue246;}
+{\*\expandedcolortbl;;\cssrgb\c12549\c12157\c11765;\cssrgb\c98039\c97647\c97255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\b\fs29\fsmilli14667 \cf2 \cb3 \expnd0\expndtw0\kerning0
+Tasks:
+\f1\b0 \cb1 \uc0\u8232 \cb3 1. Correct all of the deficiencies in index.html\cb1 \
+\cb3 2. "Sectors" selectbox:\cb1 \uc0\u8232 \cb3 2.1. Add all the entries from the "Sectors" selectbox to\'a0database\cb1 \uc0\u8232 \cb3 2.2. Compose the "Sectors" selectbox using data from database\cb1 \
+\cb3 3. Perform the following activities after the "Save" button has been pressed:\'a0\cb1 \uc0\u8232 \cb3 3.1. Validate all input data (all fields are mandatory)\cb1 \uc0\u8232 \cb3 3.2. Store all input data to\'a0database\'a0(Name, Sectors, Agree to terms)\cb1 \uc0\u8232 \cb3 3.3. Refill the form using stored data\'a0\cb1 \uc0\u8232 \cb3 3.4. Allow the user to edit his/her own data during the session\cb1 \
+
+\f0\b \cb3 \'a0
+\f1\b0 \cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b\fs42\fsmilli21333 \cf2 \cb3 Write us Your best code!
+\f1\b0\fs29\fsmilli14667 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0\cb1 \
+
+\f0\b \cb3 After completing the tasks, please provide us with:
+\f1\b0 \cb1 \uc0\u8232 \cb3 1. Full\'a0database\'a0dump (structure and data)\cb1 \uc0\u8232 \cb3 2. Source code}

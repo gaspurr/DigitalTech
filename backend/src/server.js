@@ -1,9 +1,8 @@
 const cors = require("cors")
 const express = require("express")
-const dotenv = require("dotenv").config()
+require("dotenv").config()
 const mongoose = require("mongoose")
-const userRoutes = require("./routes/users")
-const farmRoutes = require("./routes/farms")
+const sectorRoutes = require("./routes/sector")
 const bodyParser = require("body-parser")
 
 const PORT = process.env.PORT || 8081;
@@ -15,8 +14,7 @@ app.use(express.json())
 app.use(bodyParser.json({limit: "2mb", extended: true}))
 app.use(bodyParser.urlencoded({limit: "2mb", extended: true}))
 
-app.use('/', userRoutes);
-app.use('/farms', farmRoutes)
+app.use('/', sectorRoutes)
 
 app.get("/", (req, res) => {
     res.send("King of all routes")
