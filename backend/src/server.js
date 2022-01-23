@@ -3,6 +3,7 @@ const express = require("express")
 require("dotenv").config()
 const mongoose = require("mongoose")
 const sectorRoutes = require("./routes/sector")
+const userRoutes = require("./routes/user")
 const bodyParser = require("body-parser")
 
 const PORT = process.env.PORT || 8081;
@@ -15,6 +16,7 @@ app.use(bodyParser.json({limit: "2mb", extended: true}))
 app.use(bodyParser.urlencoded({limit: "2mb", extended: true}))
 
 app.use('/', sectorRoutes)
+app.use('/user', userRoutes)
 
 app.get("/", (req, res) => {
     res.send("King of all routes")
