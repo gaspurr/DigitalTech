@@ -1,27 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import axios from "axios"
+import "./Form.css"
 
 function Form() {
     const [selection, setSelection] = useState([])
 
-    //get all of the farms
-    const farmFetch = async () => {
-        await axios.get("http://localhost:8081/farms")
+    //get all of the sectors
+    const fetchSectors = async () => {
+        await axios.get("http://localhost:8081/")
             .then(res => {
                 const result = res.data
+                console.log(result)
                 //extract names for the selection
-                for (var i in result) {
-                    const farmName = result[i]["farmName"]
-                    const foo = {
-                        farmName: farmName,
-                        id: result[i]["_id"],
-                        data: result[i]["data"][i]["sensorType"]
+                setSelection(...selection, result)
 
-                    }
-                    console.log(foo)
-
-                    setSelection(prev => [...prev, foo])
-                }
                 console.log(selection)
             }).catch(e => {
                 console.log({ message: e })
@@ -29,37 +21,40 @@ function Form() {
     }
 
     useEffect(() => {
-        farmFetch()
+        fetchSectors()
     }, [])
     return (
-        <div style={{ alignItems: "center", textAlign: "center", display: "block" }}>
+        <div className="container">
             <h4>Please enter your name and pick the Sectors you are currently involved in.</h4>
-            <form type="submit" style={{display: "block", justifyContent: "center"}}>
-                <label>Name:</label>
-                <input required type="text"></input>
-
-                <select required multiple size="5">
-                    <label>Select:</label>
-                    <optgroup label="Manufacturing">
-                        <option>one</option>
-                        <option>dede</option>
-                        <option>ede</option>
-                        <option>ede</option>
-                        <option>one</option>
-                    </optgroup>
-                    <optgroup label="Transportation">
-                        <option>one</option>
-                        <option>dede</option>
-                        <option>ede</option>
-                        <option>ede</option>
-                        <option>one</option>
-                    </optgroup>
+            <form type="submit" className="form-container" action="http://localhost:8081/">
+                <label for="username">Name:</label>
+                <input id="username" required type="text"></input>
+                <label id="select">Select:</label>
+                <select required multiple for="select">
+                    {selection ? selection.map((sector) => {
+                        console.log(sector)
+                        return (
+                            <optgroup label={sector.groupName} value={sector.groupName}>
+                                {
+                                    sector.subCategories.map((subSector) => {
+                                        console.log(subSector.sectorName)
+                                        return <option value="subSector">{subSector.sectorName}</option>
+                                    })
+                                }
+                            </optgroup>
+                        )
+                    }) : null
+                    }
                 </select>
-                <button>Save</button>
+                <div className="terms-section">
+                    <label i="terms" className="terms-label"> Agree with terms</label>
+                    <input for="terms" required type="checkbox" />
+                </div>
+
+                <input type="submit" value="Submit" className="submit-btn" />
             </form>
-            <input required type="checkbox" />
-            <label> Agree with terms</label>
-        </div>
+
+        </div >
     );
 }
 

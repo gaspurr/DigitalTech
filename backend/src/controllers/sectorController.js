@@ -12,7 +12,7 @@ exports.createSector = async (req, res) => {
     } = req.body;
 
     try {
-        //check if a input data is not repeated since time can never be a duplicate value
+        //check if a sector already exists
         let sector = await Sector.findOne({
             groupName: groupName,
         })
@@ -26,7 +26,7 @@ exports.createSector = async (req, res) => {
             })
 
             const saveSector = await newSector.save()
-            if (!saveSector) throw Error("Error saving a new Sector :(")
+            if (!saveSector) throw Error("Error saving a new sector :(")
 
             return res.status(201).send({
                 message: "Sector data created successfully"
@@ -39,12 +39,12 @@ exports.createSector = async (req, res) => {
 
 //get all Sectors
 exports.getAllData = async (req, res) => {
-    const Sectors = await Sector.find();
+    const sectors = await Sector.find();
 
-    if (!Sectors) {
+    if (!sectors) {
         res.status(400).send({ message: "No Sectors to display" })
     }
-    return res.status(200).send(Sectors)
+    return res.status(200).send(sectors)
 }
 
 //fetch one Sector's data
@@ -52,12 +52,12 @@ exports.getSectorsData = async (req, res) => {
     const {
         id
     } = req.params
-    const Sector = await Sector.findOne({ _id: id });
+    const sector = await Sector.findOne({ _id: id });
 
-    if (!Sector) {
+    if (!sector) {
         res.status(400).send({ message: "No Sectors to display" })
     }
-    return res.status(200).send(Sector)
+    return res.status(200).send(sector)
 
 }
 
@@ -68,7 +68,7 @@ exports.appendSectorData = async (req, res) => {
 
     const body = req.body
 
-    const Sector = await Sector.findOneAndUpdate({
+    const sector = await Sector.findOneAndUpdate({
         _id: id
     }, {
         $push: {
@@ -78,7 +78,7 @@ exports.appendSectorData = async (req, res) => {
 
     if (body.length <= 0) {
         return res.status(400).send({ message: "The request body is empty " })
-    } else if (!Sector) {
+    } else if (!sector) {
         return res.status(400).send({ message: "Couldn't find the specified Sector" })
     } else {
         return res.status(200).send({ message: "Successfuly appended the data!" })
@@ -87,7 +87,7 @@ exports.appendSectorData = async (req, res) => {
 
 }
 
-//set Sector's data to be null
+//delete sub-categories
 exports.deleteAllDataFromSector = async (req, res) => {
     const { id } = req.params
 
