@@ -5,6 +5,7 @@ const mongoose = require("mongoose")
 const sectorRoutes = require("./routes/sector")
 const userRoutes = require("./routes/user")
 const bodyParser = require("body-parser")
+const path = require("path");
 
 const PORT = process.env.PORT || 8081;
 const app = express()
@@ -12,15 +13,11 @@ app.use(cors())
 app.use(express.json())
 
 
-app.use(bodyParser.json({limit: "2mb", extended: true}))
-app.use(bodyParser.urlencoded({limit: "2mb", extended: true}))
+app.use(bodyParser.json({ limit: "2mb", extended: true }))
+app.use(bodyParser.urlencoded({ limit: "2mb", extended: true }))
 
 app.use('/', sectorRoutes)
 app.use('/user', userRoutes)
-
-app.get("/", (req, res) => {
-    res.send("King of all routes")
-})
 
 app.get("*", (req, res) => {
     res.send("This route doesn't exist!")

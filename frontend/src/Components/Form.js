@@ -5,74 +5,118 @@ import "./Form.css"
 function Form() {
     const [selection, setSelection] = useState([])
     const [exists, setExists] = useState(false)
-    const [userInfo, setUserInfo] = useState({
-        username: '',
-        sectors:[]
-    })
+    const [username, setUsername] = useState('')
+    const [userSectors, setUserSectors] = useState([])
+    const [options, setOptions] = useState([])
 
     //get all of the sectors
     const fetchSectors = async () => {
         await axios.get("http://localhost:8081/")
             .then(res => {
                 const result = res.data
-                console.log(result)
                 //extract names for the selection
                 setSelection(...selection, result)
 
-                console.log(selection)
             }).catch(e => {
                 console.log({ message: e })
             })
+
     }
 
     //check if data exists, if not = submit, if exists = update
-    const handleSubmit = async(e, username, body ) =>{
-        e.preventDefault()
+    const checkUserExistance = async (e, username) => {
+
         //check if user exists
+        e.preventDefault()
+
         await axios.get(`http://localhost:8081/user/${username}`)
-        .then((res) =>{
-            if(res){
-                console.log("User found!")
-                setExists(true)
-            }
-        }).catch(e => {
-            console.log({message: e})
-        })
-
-        //if exist
-        if(exists){
-            await axios.post("http://localhost:8081/user/create-user", body)
-            .then(res =>{
-
-            }).catch(e =>{
-                console.log(e)
+            .then((res) => {
+                if (res) {
+                    console.log("User found!")
+                    console.log(res.data)
+                    setExists(true)
+                    updateUser()
+                }
+            }).catch(e => {
+                setExists(false)
+                console.log({ message: "No user matches this username, creating a new user" })
+                handleUserCreation()
             })
-        }else{
-            //TO-DO
-            // update user with a new body
-            console.log("updating user")
-        }
     }
 
-    useEffect(() => {
-        fetchSectors()
-    }, [])
+    const updateUser = async () => {
+
+        //if user exists
+        // update user with a new body
+        const array = []
+        userSectors.forEach(object => {
+            const foo = { sectorName: object }
+            array.push(foo)
+
+        })
+
+        await axios.put(`http://localhost:8081/user/update/${username}`, userSectors)
+            .then(res => {
+                console.log("Succesful update: " + res.data)
+                console.log("payload: " + JSON.stringify(userSectors))
+            })
+            .catch(e => {
+                console.log(e)
+                console.log("upepe")
+            })
+    }
+
+    const handleUserCreation = async () => {
+
+        //if this user doesn't exist
+        //create a new user
+        const array = []
+        userSectors.forEach(object => {
+            const foo = { sectorName: object }
+            array.push(foo)
+
+        })
+
+        await axios.post("http://localhost:8081/user/create-user", array)
+            .then(res => {
+                console.log(res.data)
+                console.log("New user created " + JSON.stringify(array))
+            }).catch(e => {
+                console.log(e)
+                console.log("e")
+            })
+
+    }
+
+    const handleSelection = (selections) => {
+        selection.preventDefault()
+        setOptions(prev => [...prev, selections])
+    }
+
+    useEffect(async () => {
+        await fetchSectors()
+    }, [exists])
+
     return (
         <div className="container">
             <h4>Please enter your name and pick the Sectors you are currently involved in.</h4>
-            <form type="submit" className="form-container" onSubmit={handleSubmit}>
-                <label for="username">Name:</label>
-                <input id="username" required type="text"></input>
-                <label id="select">Select:</label>
-                <select required multiple for="select">
-                    {selection ? selection.map((sector) => {
-                        console.log(sector)
+            <form type="submit" className="form-container" onSubmit={(e) => { checkUserExistance(e, username) }}>
+                <label>Name:
+                    <input placeholder="John Doe..." id="username" value={username} required type="text" onChange={(e) => {
+                        setUsername(e.target.value)
+                    }}></input>
+                </label>
+
+                <label>Select:</label>
+                <select id="sectors" name="sectors" multiple required onChange={(e) => {
+                    setUserSectors(prev => [...prev, e.target.value])
+                }}>
+                    {selection.length > 0 ? selection.map((sector) => {
                         return (
-                            <optgroup label={sector.groupName} value={sector.groupName}>
+                            <optgroup key={sector._id} label={sector.groupName} value={sector.groupName}>
                                 {
-                                    sector.subCategories.map((subSector) => {
-                                        console.log(subSector.sectorName)
-                                        return <option value="subSector">{subSector.sectorName}</option>
+                                    sector.subCategories.map((subSector, index) => {
+                                        return <option key={index} value={subSector.sectorName}>{subSector.sectorName}</option>
                                     })
                                 }
                             </optgroup>
@@ -82,7 +126,7 @@ function Form() {
                 </select>
                 <div className="terms-section">
                     <label i="terms" className="terms-label"> Agree with terms</label>
-                    <input for="terms" required type="checkbox" />
+                    <input required type="checkbox" />
                 </div>
 
                 <input type="submit" value="Submit" className="submit-btn" />

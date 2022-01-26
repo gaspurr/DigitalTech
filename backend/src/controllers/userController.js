@@ -1,54 +1,83 @@
-const { User, validate } = require("../models/user")
+const { Accounts, validate } = require("../models/user")
 
 
 exports.createUser = async (req, res) => {
 
     const { error } = validate(req.body)
     if (error) {
-        return res.status(400).json({ message: error.message })
+        return res.status(400).json({ message: error })
     }
-
 
     const {
         username,
-        sectors
+        users
     } = req.body;
 
-    try {
-        //check if user already exists
-        let user = await User.findOne({ username: username })
+    //check if user already exists
+    const user = await Accounts.findOne({ username: username })
 
-        if (user) {
-            return res.status(400).send('This user already exists')
-        } else {
+    if (user) {
+        res.status(400).send('This user already exists')
+    } else {
+        const newUser = new Accounts({
+            username,
+            users
+        })
 
-            const newUser = new User({
-                username,
-                sectors
-            })
+        const saveUser = await newUser.save()
+        if (!saveUser) throw Error("Error saving user")
 
-            const saveUser = await newUser.save()
-            if (!saveUser) throw Error("Error saving user")
-
-            return res.status(201).json({
-                message: "User created successfully"
-            })
-        }
-    } catch (error) {
-        return res.status(409).json({ message: error.message })
+        res.status(201).json({
+            message: "User created successfully"
+        })
     }
+
 }
 
 exports.checkUser = async (req, res) => {
 
-    const user = await User.findOne({ username: req.params.username });
+    const { id } = req.params
+
+    const user = await Accounts.findOne({ username: id });
 
     if (!user) {
-        res.status(400).send({message: "No users found by this username"})
-    }else{
-        res.status(200).send(user)
+        return res.status(400).send({ message: "No users found by this username" })
+    } else {
+        return res.status(200).send(user)
+    }
+}
+
+exports.getUsers = async (req, res) => {
+    const users = await Accounts.find({});
+
+    if (!users) {
+        return res.status(400).send({ message: "No users to display" })
+    } else {
+        return res.status(200).send(users)
+    }
+
+}
+//update sectors array
+exports.updateUser = async (req, res) => {
+    const { username } = req.params
+
+    try {
+        const update = await Accounts.findOneAndUpdate({
+            username: username
+        }, {
+            $set: {
+                sectors: req.body
+            }
+
+        }, { new: true })
+
+        res.status(200).send(update)
+    } catch (e) {
+        res.status(400).send({ message: "Something went wrong while trying to update the user's data" })
     }
 
 
-
 }
+
+
+//check if user exists, if not create new user, if exists append data
