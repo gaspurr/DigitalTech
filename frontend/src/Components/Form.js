@@ -8,9 +8,11 @@ function Form() {
     const [username, setUsername] = useState('')
     const [userSectors, setUserSectors] = useState([])
     const [options, setOptions] = useState([])
+    const [selected, setSelected] = useState(false)
 
     //get all of the sectors
     const fetchSectors = async () => {
+
         await axios.get("http://localhost:8081/")
             .then(res => {
                 const result = res.data
@@ -48,12 +50,6 @@ function Form() {
 
         //if user exists
         // update user with a new body
-        const array = []
-        userSectors.forEach(object => {
-            const foo = { sectorName: object }
-            array.push(foo)
-
-        })
 
         await axios.put(`http://localhost:8081/user/update/${username}`, userSectors)
             .then(res => {
@@ -70,17 +66,12 @@ function Form() {
 
         //if this user doesn't exist
         //create a new user
-        const array = []
-        userSectors.forEach(object => {
-            const foo = { sectorName: object }
-            array.push(foo)
 
-        })
 
-        await axios.post("http://localhost:8081/user/create-user", array)
+        await axios.post("http://localhost:8081/user/create-user", userSectors)
             .then(res => {
                 console.log(res.data)
-                console.log("New user created " + JSON.stringify(array))
+                console.log("New user created " + JSON.stringify(userSectors))
             }).catch(e => {
                 console.log(e)
                 console.log("e")
@@ -88,10 +79,16 @@ function Form() {
 
     }
 
-    const handleSelection = (selections) => {
-        selection.preventDefault()
-        setOptions(prev => [...prev, selections])
-    }
+    const handleSelectionChange = (event) => {
+        console.log(event)
+        if (!userSectors.includes(event.target.value)) {
+            setUserSectors([...userSectors, event.target.value]);
+        } else if (userSectors.includes(event.target.value)) {
+            setUserSectors(userSectors.filter(q => q !== event.target.value));
+        }
+    };
+
+    console.log(userSectors)
 
     useEffect(async () => {
         await fetchSectors()
@@ -100,7 +97,7 @@ function Form() {
     return (
         <div className="container">
             <h4>Please enter your name and pick the Sectors you are currently involved in.</h4>
-            <form type="submit" className="form-container" onSubmit={(e) => { checkUserExistance(e, username) }}>
+            <form type="submit" className="form-container">
                 <label>Name:
                     <input placeholder="John Doe..." id="username" value={username} required type="text" onChange={(e) => {
                         setUsername(e.target.value)
@@ -108,15 +105,18 @@ function Form() {
                 </label>
 
                 <label>Select:</label>
-                <select id="sectors" name="sectors" multiple required onChange={(e) => {
-                    setUserSectors(prev => [...prev, e.target.value])
-                }}>
+                <select id="sectors" name="sectors" multiple required onChange={(event) => {handleSelectionChange(event)}}>
                     {selection.length > 0 ? selection.map((sector) => {
                         return (
                             <optgroup key={sector._id} label={sector.groupName} value={sector.groupName}>
                                 {
                                     sector.subCategories.map((subSector, index) => {
-                                        return <option key={index} value={subSector.sectorName}>{subSector.sectorName}</option>
+                                        return (
+
+                                            <option key={index} value={subSector.sectorName} onClick={() => {
+                                                {userSectors.includes(subSector.sectorName) ? setSelected(true) : setSelected(false)}
+                                            }} >{subSector.sectorName}</option>
+                                        )
                                     })
                                 }
                             </optgroup>
@@ -129,7 +129,7 @@ function Form() {
                     <input required type="checkbox" />
                 </div>
 
-                <input type="submit" value="Submit" className="submit-btn" />
+                <input type="submit" value="Submit" className="submit-btn" onClick={(e) => { checkUserExistance(e, username) }} />
             </form>
 
         </div >
