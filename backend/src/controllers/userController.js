@@ -7,11 +7,11 @@ exports.createUser = async (req, res) => {
     if (error) {
         return res.status(400).json({ message: error })
     }
-
     const {
         username,
-        users
-    } = req.body;
+        sectors
+    } = req.body
+
 
     //check if user already exists
     const user = await Accounts.findOne({ username: username })
@@ -19,17 +19,16 @@ exports.createUser = async (req, res) => {
     if (user) {
         res.status(400).send('This user already exists')
     } else {
+
         const newUser = new Accounts({
-            username,
-            users
+            username: username,
+            sectors: sectors
         })
 
         const saveUser = await newUser.save()
         if (!saveUser) throw Error("Error saving user")
 
-        res.status(201).json({
-            message: "User created successfully"
-        })
+        res.status(201).send({message: "User created successfully" + newUser})
     }
 
 }
@@ -78,6 +77,3 @@ exports.updateUser = async (req, res) => {
 
 
 }
-
-
-//check if user exists, if not create new user, if exists append data

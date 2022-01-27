@@ -22,8 +22,6 @@ input, select {
     display:inline-flex;
     width: 50%;
 }
-.terms-section input {
-}
 
 .submit-btn {
     border: none;
@@ -31,4 +29,10 @@ input, select {
     padding: 0.5rem;
     min-width: 100px;
     border-radius: 5px;
+}
+
+.submit-btn:hover{
+    background-color: rgb(76, 119, 198);
+    transition: 0.3s ease;
+    color: white;
 }

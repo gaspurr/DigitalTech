@@ -7,8 +7,7 @@ function Form() {
     const [exists, setExists] = useState(false)
     const [username, setUsername] = useState('')
     const [userSectors, setUserSectors] = useState([])
-    const [options, setOptions] = useState([])
-    const [selected, setSelected] = useState(false)
+    const [selected, setSelected] = useState(userSectors)
 
     //get all of the sectors
     const fetchSectors = async () => {
@@ -55,10 +54,10 @@ function Form() {
             .then(res => {
                 console.log("Succesful update: " + res.data)
                 console.log("payload: " + JSON.stringify(userSectors))
+                setSelected(userSectors)
             })
             .catch(e => {
                 console.log(e)
-                console.log("upepe")
             })
     }
 
@@ -66,38 +65,46 @@ function Form() {
 
         //if this user doesn't exist
         //create a new user
+        const array = []
+        userSectors.map(sector =>{
+            array.push({sectorName: sector})
+        })
+
+        const userTemplate = {
+            username: username,
+            sectors: userSectors
+        }
 
 
-        await axios.post("http://localhost:8081/user/create-user", userSectors)
+        await axios.post("http://localhost:8081/user/create-user", userTemplate)
             .then(res => {
-                console.log(res.data)
-                console.log("New user created " + JSON.stringify(userSectors))
+                console.log("New user created " + JSON.stringify(userTemplate) + JSON.stringify(res.data))
+                setSelected(userSectors)
             }).catch(e => {
                 console.log(e)
-                console.log("e")
             })
 
     }
 
     const handleSelectionChange = (event) => {
-        console.log(event)
+
         if (!userSectors.includes(event.target.value)) {
             setUserSectors([...userSectors, event.target.value]);
         } else if (userSectors.includes(event.target.value)) {
             setUserSectors(userSectors.filter(q => q !== event.target.value));
         }
+        console.log(userSectors)
+
     };
 
-    console.log(userSectors)
-
-    useEffect(async () => {
-        await fetchSectors()
-    }, [exists])
+    useEffect(() => {
+        fetchSectors()
+    }, [])
 
     return (
         <div className="container">
             <h4>Please enter your name and pick the Sectors you are currently involved in.</h4>
-            <form type="submit" className="form-container">
+            <form type="submit" className="form-container" onSubmit={(e) => { checkUserExistance(e, username) }}>
                 <label>Name:
                     <input placeholder="John Doe..." id="username" value={username} required type="text" onChange={(e) => {
                         setUsername(e.target.value)
@@ -113,9 +120,7 @@ function Form() {
                                     sector.subCategories.map((subSector, index) => {
                                         return (
 
-                                            <option key={index} value={subSector.sectorName} onClick={() => {
-                                                {userSectors.includes(subSector.sectorName) ? setSelected(true) : setSelected(false)}
-                                            }} >{subSector.sectorName}</option>
+                                            <option style={userSectors.includes(subSector.sectorName) ? {backgroundColor: "lightgreen"} : {backgroundColor: "none"}} key={index} value={subSector.sectorName}>{subSector.sectorName}</option>
                                         )
                                     })
                                 }
@@ -129,7 +134,7 @@ function Form() {
                     <input required type="checkbox" />
                 </div>
 
-                <input type="submit" value="Submit" className="submit-btn" onClick={(e) => { checkUserExistance(e, username) }} />
+                <input type="submit" value="Submit" className="submit-btn" />
             </form>
 
         </div >
